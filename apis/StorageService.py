@@ -22,13 +22,13 @@ async def get_record_from_storage_async(session, env, data_partition, file_id):
         if response.status == 200:
             file_name = response_json['id']
 
-            print(f"Received File from Storage with id = {file_name}")
+            print(f"Record Retreived successfully with id = {file_name}")
             with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
                 json.dump(response_json, fp, indent=4)
         elif response.status == 404:
             print(f"File Not Found from Storage")
         else:
-            print(f"Error occurred while retreiving file from Storage")
+            print(f"Error occurred while retrieving file from Storage")
 
 
 async def storage_get(env, data_partition, file_id):
@@ -47,7 +47,7 @@ async def delete_record_from_storage_async(session, env, data_partition, file_id
         "Authorization": get_token(env)
     }
     async with session.delete(url=url, headers=headers) as response:
-        response_json = await response.json(content_type='text/html')
+        response_json = await response.json(content_type=None)
         if response.status == 204:
             print(f"Record deleted successfully with id = {file_id}")
         elif response.status == 400:
@@ -76,7 +76,7 @@ async def create_record_from_storage_async(session, env, data_partition, file_id
     }
     with open(f"{OUTPUT_DIR}/storage_response.json") as fp:
         payload = [json.loads(fp.read())]
-        print(payload)
+        # print(payload)
     async with session.put(url=url, headers=headers, json=payload) as response:
         response_json = await response.json()
         if response.status == 201:

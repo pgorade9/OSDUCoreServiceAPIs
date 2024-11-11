@@ -2,7 +2,10 @@ import asyncio
 
 from apis.FileService import file_get
 from apis.SchemaService import schema_get
+from apis.SearchService import search_query
 from apis.StorageService import storage_get, storage_create, storage_delete
+
+
 
 # environments list for reference
 envs = ["evd", "evt", "weu", "sgp", "psc", "eut", "brs"]
@@ -15,10 +18,16 @@ envs_ltops = ["evd-ltops", "evt-ltops", "adme-outerloop", "prod-canary-ltops", "
 # schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
 
 # Test Data
-env = "evt"
-data_partition = "default-qa-sis-internal-hq"
-file_id = "default-qa-sis-internal-hq:dataset--File.Generic:0933d34d-e743-4048-ab68-bbce56e0a1d4"
+# env = "evt"
+# data_partition = "default-qa-sis-internal-hq"
+# file_id = "default-qa-sis-internal-hq:dataset--File.Generic:0933d34d-e743-4048-ab68-bbce56e0a1d4"
 # schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
+
+
+env = "evd"
+data_partition = "default-dev-sis-internal-hq"
+file_id = "default-dev-sis-internal-hq:work-product-component--WellLog:a70b750dcd5141388d08a3a0dc9eeafe"
+
 
 # env = "sgp"
 # data_partition = "petronas-osdu"
@@ -27,10 +36,14 @@ file_id = "default-qa-sis-internal-hq:dataset--File.Generic:0933d34d-e743-4048-a
 
 if __name__ == "__main__":
 
+
     # asyncio.run(file_get(env, data_partition, file_id))
 
+    # asyncio.run(storage_create(env, data_partition, file_id))
+    # asyncio.run(storage_get(env, data_partition, file_id))
     # asyncio.run(storage_delete(env, data_partition, file_id))
     # asyncio.run(storage_create(env, data_partition, file_id))
-    asyncio.run(storage_get(env, data_partition, file_id))
 
     # asyncio.run(schema_get(env, data_partition, schema_id))
+
+    asyncio.run(search_query(env, data_partition, file_id))

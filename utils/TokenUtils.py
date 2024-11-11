@@ -1,10 +1,16 @@
 import json
-
 import requests
-
 from configuration import keyvault
 
+from redis import StrictRedis
+from redis_cache import RedisCache
 
+client = StrictRedis(host="127.0.0.1", port=6379, decode_responses=True)
+cache = RedisCache(redis_client=client)
+
+
+
+@cache.cache()
 def get_token(env):
     response = requests.request(method="POST",
                                 url=keyvault[env]["token_url"],

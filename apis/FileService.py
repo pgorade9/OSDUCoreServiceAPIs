@@ -18,11 +18,16 @@ async def get_metadata_from_file_async(session, env, data_partition, file_id):
     }
     async with session.get(url=url, headers=headers) as response:
         response_json = await response.json()
-        file_name = response_json['id']
+        if response.status == 200:
+            file_name = response_json['id']
 
-        print(f"Received File with id = {file_name}")
-        with open(f"{OUTPUT_DIR}/file_response.json", "w") as fp:
-            json.dump(response_json, fp, indent=4)
+            print(f"Received File with id = {file_name}")
+            with open(f"{OUTPUT_DIR}/file_response.json", "w") as fp:
+                json.dump(response_json, fp, indent=4)
+        elif response.status == 404:
+            print(f"File Not Found from Storage")
+        else:
+            print(f"Error occurred while retreiving file from File Service")
 
 
 async def file_get(env, data_partition, file_id):

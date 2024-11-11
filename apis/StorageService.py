@@ -19,11 +19,17 @@ async def get_record_from_storage_async(session, env, data_partition, file_id):
     }
     async with session.get(url=url, headers=headers) as response:
         response_json = await response.json()
-        file_name = response_json['id']
+        if response.status == 200:
+            file_name = response_json['id']
 
-        print(f"Received File from Storage with id = {file_name}")
-        with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
-            json.dump(response_json, fp, indent=4)
+            print(f"Received File from Storage with id = {file_name}")
+            with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
+                json.dump(response_json, fp, indent=4)
+        elif response.status == 404:
+            print(f"File Not Found from Storage")
+        else:
+            print(f"Error occurred while retreiving file from Storage")
+
 
 async def storage_get(env, data_partition, file_id):
     async with aiohttp.ClientSession() as aio_session:
@@ -31,8 +37,65 @@ async def storage_get(env, data_partition, file_id):
         await asyncio.gather(*tasks)
 
 
-if __name__ == "__main__":
+async def delete_record_from_storage_async(session, env, data_partition, file_id):
+    DNS_HOST = keyvault[env]["adme_dns_host"]
+    BASE_URL = "/api/storage/v2/records/"
 
+    url = f"{DNS_HOST}{BASE_URL}{file_id}"
+    headers = {
+        "data-partition-id": data_partition,
+        "Authorization": get_token(env)
+    }
+    async with session.delete(url=url, headers=headers) as response:
+        response_json = await response.json(content_type='text/html')
+        if response.status == 204:
+            print(f"Record deleted successfully with id = {file_id}")
+        elif response.status == 400:
+            print(f"Validation error.\n{response_json}")
+        elif response.status == 403:
+            print(f"User not authorized to perform the action.\n{response_json}")
+        else:
+            print(f"Error occurred while deleting file from Storage.\n{response_json}")
+
+
+async def storage_delete(env, data_partition, file_id):
+    async with aiohttp.ClientSession() as aio_session:
+        tasks = [delete_record_from_storage_async(aio_session, env, data_partition, file_id)]
+        await asyncio.gather(*tasks)
+
+
+async def create_record_from_storage_async(session, env, data_partition, file_id):
+    DNS_HOST = keyvault[env]["adme_dns_host"]
+    BASE_URL = "/api/storage/v2/records"
+
+    url = f"{DNS_HOST}{BASE_URL}"
+    headers = {
+        "data-partition-id": data_partition,
+        "Authorization": get_token(env),
+        'Content-Type': 'application/json',
+    }
+    with open(f"{OUTPUT_DIR}/storage_response.json") as fp:
+        payload = [json.loads(fp.read())]
+        print(payload)
+    async with session.put(url=url, headers=headers, json=payload) as response:
+        response_json = await response.json()
+        if response.status == 201:
+            print(f"Record created successfully with id = {file_id}")
+        elif response.status == 400:
+            print(f"Invalid record format.\n{response_json}")
+        elif response.status == 403:
+            print(f"User not authorized to perform the action.\n{response_json}")
+        else:
+            print(f"Error occurred while creating file in Storage.\n{response_json}")
+
+
+async def storage_create(env, data_partition, file_id):
+    async with aiohttp.ClientSession() as aio_session:
+        tasks = [create_record_from_storage_async(aio_session, env, data_partition, file_id)]
+        await asyncio.gather(*tasks)
+
+
+if __name__ == "__main__":
     envs = ["evt", "weu", "sgp", "psc", "eut", "brs"]
     envs_ltops = ["evd-ltops", "evt-ltops", "adme-outerloop", "prod-canary-ltops", "prod-aws-ltops"]
 

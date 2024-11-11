@@ -12,7 +12,7 @@ def get_token(env):
                                 data=f"grant_type=client_credentials&client_id={keyvault[env]["client_id"]}&client_secret={keyvault[env]["client_secret"]}&scope={keyvault[env]["scope"]}")
 
     if response.status_code == 200:
-        print(f"********* Token Generated Successfully ************")
+        print(f"********* {env} Token Generated Successfully ************")
         response_dict = json.loads(response.text)
         return "Bearer " + response_dict["access_token"]
     else:

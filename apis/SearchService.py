@@ -21,18 +21,19 @@ async def search_async(session, env, data_partition, file_id):
     with open(f"utils/search_query.json") as fp:
         payload = json.loads(fp.read())
         # print(payload)
-    async with session.post(url=url, headers=headers, json=payload) as response:
-        response_json = await response.json()
-        if response.status == 200:
-            print(f"Search query successful")
-            with open(f"{OUTPUT_DIR}/search_response.json", "w") as fp:
-                json.dump(response_json, fp, indent=4)
-        elif response.status == 400:
-            print(f"Invalid search query.\n{response_json}")
-        elif response.status == 403:
-            print(f"User not authorized to perform the action.\n{response_json}")
-        else:
-            print(f"Error occurred while searching query.\n{response_json}")
+    try:
+        async with session.post(url=url, headers=headers, json=payload) as response:
+            response_json = await response.json()
+            if response.status == 200:
+                print(f"Search query successful")
+                with open(f"{OUTPUT_DIR}/search_response.json", "w") as fp:
+                    json.dump(response_json, fp, indent=4)
+            elif response.status == 400:
+                print(f"Invalid search query.\n{response_json}")
+            elif response.status == 403:
+                print(f"User not authorized to perform the action.\n{response_json}")
+    except Exception as e:
+        print(f"Error occurred while searching query.\n{e}")
 
 
 async def search_query(env, data_partition, file_id):

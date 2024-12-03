@@ -1,6 +1,6 @@
 {
     "kind": "*:*:*:*",
-    "query": "id:sandbox-weu-des-prod-testing-e\\:dataset--File.Generic\\:acd9c209-4654-4194-85fb-430ec9c5ec93",
+    "query": "id:default-qa-sis-internal-hq\\:master-data--ConnectedSourceRegistryEntry\\:*",
     "returnedFields":["id","kind","data"],
     "limit": 200
 }

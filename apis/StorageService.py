@@ -17,18 +17,20 @@ async def get_record_from_storage_async(session, env, data_partition, file_id):
         "data-partition-id": data_partition,
         "Authorization": get_token(env)
     }
-    async with session.get(url=url, headers=headers) as response:
-        response_json = await response.json()
-        if response.status == 200:
-            file_name = response_json['id']
+    try:
+        async with session.get(url=url, headers=headers) as response:
+            response_json = await response.json()
 
-            print(f"Record Retreived successfully with id = {file_name}")
-            with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
-                json.dump(response_json, fp, indent=4)
-        elif response.status == 404:
-            print(f"File Not Found from Storage")
-        else:
-            print(f"Error occurred while retrieving file from Storage")
+            if response.status == 200:
+                file_name = response_json['id']
+
+                print(f"Record Retreived successfully with id = {file_name}")
+                with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
+                    json.dump(response_json, fp, indent=4)
+            elif response.status == 404:
+                print(f"File Not Found from Storage")
+    except Exception as e:
+        print(f"Error occurred while retrieving file from Storage. {e} ")
 
 
 async def storage_get(env, data_partition, file_id):
@@ -99,6 +101,9 @@ if __name__ == "__main__":
     envs = ["evt", "weu", "sgp", "psc", "eut", "brs"]
     envs_ltops = ["evd-ltops", "evt-ltops", "adme-outerloop", "prod-canary-ltops", "prod-aws-ltops"]
 
+    # env = "evt"
+    # data_partition = "default-qa-sis-internal-hq"
+    # file_id = "default-qa-sis-internal-hq:PersistedSeismicManifest:dc64409b0d78479ebf4f901f34c2f119"
     env = "weu"
     data_partition = "sandbox-weu-des-prod-testing-e"
     file_id = "sandbox-weu-des-prod-testing-e:dataset--File.Generic:ee7ae678-8a36-4b4a-a153-7a29d1aa2d61"

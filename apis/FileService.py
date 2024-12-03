@@ -7,6 +7,7 @@ from configuration import keyvault
 from constants.Constants import OUTPUT_DIR
 from utils.TokenUtils import get_token
 
+
 async def get_metadata_from_file_async(session, env, data_partition, file_id):
     DNS_HOST = keyvault[env]["adme_dns_host"]
     BASE_URL = "/api/file/v2/files/"
@@ -38,7 +39,6 @@ async def file_get(env, data_partition, file_id):
 
 
 if __name__ == "__main__":
-
     envs = ["evt", "weu", "sgp", "psc", "eut", "brs"]
     envs_ltops = ["evd-ltops", "evt-ltops", "adme-outerloop", "prod-canary-ltops", "prod-aws-ltops"]
 

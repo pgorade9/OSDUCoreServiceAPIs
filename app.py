@@ -18,15 +18,17 @@ envs_ltops = ["evd-ltops", "evt-ltops", "adme-outerloop", "prod-canary-ltops", "
 # schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
 
 # Test Data
-env = "evd"
-data_partition = "default-dev-sis-internal-hq"
-file_id = "default-dev-sis-internal-hq:dataset--File.Generic:48ec54f2-c3be-449d-8f2d-5331968b73be"
-schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
+# env = "evd"
+# data_partition = "default-dev-sis-internal-hq"
+# file_id = "default-dev-sis-internal-hq:dataset--File.Generic:48ec54f2-c3be-449d-8f2d-5331968b73be"
+# schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
 
 
-# env = "evt"
-# data_partition = "default-qa-sis-internal-hq"
-# file_id = "default-qa-sis-internal-hq:dataset--File.Generic:5b718938-3635-4b6b-9d40-447ad5a816db"
+env = "evt"
+data_partition = "default-qa-sis-internal-hq"
+# file_id = "default-qa-sis-internal-hq:wks:work-product-component--WellboreMarkerSet:5b718938-3635-4b6b-9d40-447ad5a816db"
+file_id = "default-qa-sis-internal-hq:dataset--File.Generic:5b718938-3635-4b6b-9d40-447ad5a816db"
+
 
 
 # env = "sgp"
@@ -37,13 +39,13 @@ schema_id = "osdu:wks:dataset--File.Generic:1.0.0"
 if __name__ == "__main__":
 # PLEASE START REDIS BEFORE RUNNING THIS
 
-    # asyncio.run(file_get(env, data_partition, file_id))
+    asyncio.run(file_get(env, data_partition, file_id))
 
     # asyncio.run(storage_create(env, data_partition, file_id))
     # asyncio.run(storage_get(env, data_partition, file_id))
     # asyncio.run(storage_delete(env, data_partition, file_id))
     # asyncio.run(storage_create(env, data_partition, file_id))
 
-    asyncio.run(schema_get(env, data_partition, schema_id))
+    # asyncio.run(schema_get(env, data_partition, schema_id))
 
     # asyncio.run(search_query(env, data_partition, file_id))

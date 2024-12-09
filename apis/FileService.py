@@ -21,21 +21,24 @@ async def get_metadata_from_file_async(session, env, data_partition, file_id):
         response_json = await response.json()
         if response.status == 200:
             file_name = response_json['id']
-
             print(f"Received File with id = {file_name}")
             with open(f"{OUTPUT_DIR}/file_response.json", "w") as fp:
                 json.dump(response_json, fp, indent=4)
+            return response_json
         elif response.status == 404:
             print(f"File Not Found from Storage")
+            return response_json
         else:
             print(f"Error occurred while retreiving file from File Service")
+            return response_json
 
 
 async def file_get(env, data_partition, file_id):
     async with aiohttp.ClientSession() as aio_session:
         # tasks = [get_record_from_storage_async(aio_session) for _ in range(100)]
-        tasks = [get_metadata_from_file_async(aio_session, env, data_partition, file_id)]
-        await asyncio.gather(*tasks)
+        # tasks = [get_metadata_from_file_async(aio_session, env, data_partition, file_id)]
+        # await asyncio.gather(*tasks)
+        return await get_metadata_from_file_async(aio_session, env, data_partition, file_id)
 
 
 if __name__ == "__main__":

@@ -24,19 +24,22 @@ async def get_record_from_storage_async(session, env, data_partition, file_id):
             if response.status == 200:
                 file_name = response_json['id']
 
-                print(f"Record Retreived successfully with id = {file_name}")
+                print(f"Record Retrieved from Storage successfully with id = {file_name}")
                 with open(f"{OUTPUT_DIR}/storage_response.json", "w") as fp:
                     json.dump(response_json, fp, indent=4)
+                return response_json
             elif response.status == 404:
                 print(f"File Not Found from Storage")
+                return response_json
     except Exception as e:
         print(f"Error occurred while retrieving file from Storage. {e} ")
+        return response_json
 
 
 async def storage_get(env, data_partition, file_id):
     async with aiohttp.ClientSession() as aio_session:
-        tasks = [get_record_from_storage_async(aio_session, env, data_partition, file_id)]
-        await asyncio.gather(*tasks)
+        # tasks = [get_record_from_storage_async(aio_session, env, data_partition, file_id)]
+        return await get_record_from_storage_async(aio_session, env, data_partition, file_id)
 
 
 async def delete_record_from_storage_async(session, env, data_partition, file_id):

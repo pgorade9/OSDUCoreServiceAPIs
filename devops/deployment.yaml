@@ -2,7 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oasu-api-frontend-deployment
+  name: osdu-api-frontend-deployment
+  namespace: osdu
 spec:
   replicas: 2  # Number of pods to run for frontend
   selector:
@@ -13,6 +14,20 @@ spec:
       labels:
         app: frontend
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.azure.com/agentpool
+                    operator: In
+                    values:
+                      - services
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - services
       containers:
         - name: frontend
           # Replace with the actual Docker image for the frontend
@@ -27,6 +42,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: osdu-api-frontend-service
+  namespace: osdu
 spec:
   selector:
     app: frontend
@@ -42,6 +58,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: osdu-api-backend-deployment
+  namespace: osdu
 spec:
   replicas: 2  # Number of pods to run for backend
   selector:
@@ -52,6 +69,20 @@ spec:
       labels:
         app: backend
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.azure.com/agentpool
+                    operator: In
+                    values:
+                      - services
+              - matchExpressions:
+                  - key: agentpool
+                    operator: In
+                    values:
+                      - services
       containers:
         - name: backend
           # Replace with the actual Docker image for the backend (e.g., FastAPI app)
@@ -66,6 +97,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: osdu-api-backend-service
+  namespace: osdu
 spec:
   selector:
     app: backend

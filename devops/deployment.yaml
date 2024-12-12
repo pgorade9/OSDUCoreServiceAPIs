@@ -1,0 +1,96 @@
+# Frontend Deployment and Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oasu-api-frontend-deployment
+spec:
+  replicas: 2  # Number of pods to run for frontend
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          # Replace with the actual Docker image for the frontend
+          image: osdur3mvpcrdevxmngcr.azurecr.io/osducoreserviceapis-frontend:latest  # e.g., frontend-app:1.0
+          ports:
+            - containerPort: 80  # NGINX serves the frontend on port 80
+          env:
+            - name: ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: osdu-api-frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80  # Exposing service on port 80 internally
+      targetPort: 80  # The port NGINX listens on in the container
+  type: LoadBalancer  # LoadBalancer to expose the service externally (use NodePort or ClusterIP as needed)
+
+---
+# Backend Deployment and Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osdu-api-backend-deployment
+spec:
+  replicas: 2  # Number of pods to run for backend
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          # Replace with the actual Docker image for the backend (e.g., FastAPI app)
+          image: osdur3mvpcrdevxmngcr.azurecr.io/osducoreserviceapis-backend:latest  # e.g., backend-app:1.0
+          ports:
+            - containerPort: 8000  # Backend app listens on port 8000
+          env:
+            - name: ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: osdu-api-backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000  # Exposing service on port 8000 internally
+      targetPort: 8000  # The port the backend container is listening on
+  type: ClusterIP  # Internal service (could also be NodePort or LoadBalancer based on requirements)
+
+---
+# Optional Ingress for frontend (routes traffic to frontend-service)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /osdu-api  # You can change this to any path you prefer
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80

@@ -32,6 +32,7 @@ spec:
         - name: frontend
           # Replace with the actual Docker image for the frontend
           image: osdur3mvpcrdevxmngcr.azurecr.io/osducoreserviceapis-frontend:latest  # e.g., frontend-app:1.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 80  # NGINX serves the frontend on port 80
           env:
@@ -87,6 +88,7 @@ spec:
         - name: backend
           # Replace with the actual Docker image for the backend (e.g., FastAPI app)
           image: osdur3mvpcrdevxmngcr.azurecr.io/osducoreserviceapis-backend:latest  # e.g., backend-app:1.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000  # Backend app listens on port 8000
           env:

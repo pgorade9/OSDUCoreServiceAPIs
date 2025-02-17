@@ -1,0 +1,87 @@
+---
+# Optional Ingress for frontend (routes traffic to frontend-service)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  namespace: osdu
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /  # You can change this to any path you prefer
+            pathType: Prefix
+            backend:
+              service:
+                name: osdu-api-frontend-service
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osdu-api-ingress
+  namespace: osdu
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /schema
+        pathType: Prefix
+        backend:
+          service:
+            name: osdu-api-backend-service
+            port:
+              number: 8000
+      - path: /storage
+        pathType: Prefix
+        backend:
+          service:
+            name: osdu-api-backend-service
+            port:
+              number: 8000
+      - path: /file
+        pathType: Prefix
+        backend:
+          service:
+            name: osdu-api-backend-service
+            port:
+              number: 8000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: osdu-api-frontend-service
+  namespace: osdu
+spec:
+  gateways:
+    - istio-gateway
+  hosts:
+    - evd.managed-osdu.cloud.slb-ds.com
+  http:
+    - corsPolicy:
+        allowCredentials: true
+        allowHeaders:
+          - Authorization
+          - Data-Partition-Id
+          - Correlation-Id
+          - Content-Type
+        allowMethods:
+          - POST
+          - GET
+          - PUT
+          - PATCH
+          - DELETE
+        allowOrigins:
+          - prefix: '*'
+        maxAge: 60m
+      match:
+        - uri:
+            prefix: /api/ud/osduapi-service
+      route:
+        - destination:
+            host: "osdu-api-frontend-service.osdu.svc.cluster.local"
+            port:
+              number: 80

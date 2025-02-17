@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [
     "http://localhost:4200",  # Allow Angular app running on localhost:4200
     # Add other origins as needed
+    # Note that for this list you need to specify localhost and 127.0.0.1 separately
 ]
 
 # Add CORS middleware to allow requests from the specified origins

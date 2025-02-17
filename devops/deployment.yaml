@@ -5,7 +5,7 @@ metadata:
   name: osdu-api-frontend-deployment
   namespace: osdu
 spec:
-  replicas: 2  # Number of pods to run for frontend
+  replicas: 1  # Number of pods to run for frontend
   selector:
     matchLabels:
       app: frontend
@@ -61,7 +61,7 @@ metadata:
   name: osdu-api-backend-deployment
   namespace: osdu
 spec:
-  replicas: 2  # Number of pods to run for backend
+  replicas: 1  # Number of pods to run for backend
   selector:
     matchLabels:
       app: backend
@@ -104,27 +104,7 @@ spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
-      port: 8000  # Exposing service on port 8000 internally
-      targetPort: 8000  # The port the backend container is listening on
-  type: ClusterIP  # Internal service (could also be NodePort or LoadBalancer based on requirements)
-
----
-# Optional Ingress for frontend (routes traffic to frontend-service)
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: frontend-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /osdu-api  # You can change this to any path you prefer
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-service
-                port:
-                  number: 80
+    - port: 8000              # The internal port your application listens on
+      targetPort: 8000        # The port on your backend pod
+      nodePort: 30080         # The NodePort that will be exposed on each node
+  type: NodePort
